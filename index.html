@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OldBackTCG · Cartas en venta</title>
+  <title>OldBackTCG Â· Cartas en venta</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <meta name="description" content="Catálogo de cartas japonesas old back de Pokémon. Pagá por Link de Pago de Mercado Pago. Envíos por PAQ.AR o retiro por Parque Rivadavia."/>
+  <meta name="description" content="CatÃ¡logo de cartas japonesas old back de PokÃ©mon. PagÃ¡ por Link de Pago de Mercado Pago. EnvÃ­os por PAQ.AR o retiro por Parque Rivadavia."/>
   <style>
     .img-wrap { aspect-ratio: 3/4; overflow: hidden; }
     .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
@@ -15,9 +15,9 @@
   <header class="sticky top-0 z-10 bg-white/90 backdrop-blur border-b">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
       <span class="text-2xl font-black tracking-tight">OldBackTCG</span>
-      <span class="text-sm text-neutral-500">· Cartas en venta</span>
+      <span class="text-sm text-neutral-500">Â· Cartas en venta</span>
       <div class="ml-auto flex items-center gap-2">
-        <input id="q" placeholder="Buscar Pokémon, set, condición…" class="w-64 max-w-[50vw] px-3 py-2 rounded-xl bg-neutral-100 border focus:bg-white outline-none">
+        <input id="q" placeholder="Buscar PokÃ©mon, set, condiciÃ³nâ€¦" class="w-64 max-w-[50vw] px-3 py-2 rounded-xl bg-neutral-100 border focus:bg-white outline-none">
         <select id="currency" class="px-3 py-2 rounded-xl bg-neutral-100 border">
           <option value="USD">USD</option>
           <option value="ARS">ARS</option>
@@ -29,7 +29,7 @@
   <main class="max-w-6xl mx-auto px-4 py-6">
     <section class="mb-4 text-sm text-neutral-700">
       <p class="leading-relaxed">
-        Envíos por <b>PAQ.AR</b> a cargo del comprador · Retiro en <b>Parque Rivadavia</b> (cercanías del local de Charly).
+        EnvÃ­os por <b>PAQ.AR</b> a cargo del comprador Â· Retiro en <b>Parque Rivadavia</b> (cercanÃ­as del local de Charly).
       </p>
     </section>
 
@@ -67,9 +67,9 @@
 
   <footer class="max-w-6xl mx-auto px-4 py-8 text-xs text-neutral-500">
     <p>
-      ¿Cómo funciona el pago? Cada producto tiene un <b>Link de Pago</b> de Mercado Pago: el comprador paga el monto y luego coordinan entrega (envío por PAQ.AR o retiro por Parque Rivadavia).
+      Â¿CÃ³mo funciona el pago? Cada producto tiene un <b>Link de Pago</b> de Mercado Pago: el comprador paga el monto y luego coordinan entrega (envÃ­o por PAQ.AR o retiro por Parque Rivadavia).
     </p>
-    <p class="mt-2">© <span id="year"></span> OldBackTCG · Hecho con HTML+JS · Sin servidores, gratis en GitHub Pages.</p>
+    <p class="mt-2">Â© <span id="year"></span> OldBackTCG Â· Hecho con HTML+JS Â· Sin servidores, gratis en GitHub Pages.</p>
   </footer>
 
   <script>
@@ -110,8 +110,8 @@
 
     function buyLink(item) {
       if (item.mp_link) return item.mp_link;
-      const msg = encodeURIComponent(`Hola! Quiero comprar: ${item.name} (${item.set}) por ${displayPrice(item)}. ¿Coordinamos?`);
-      return `https://wa.me/54911XXXXYYYY?text=${msg}`; // poné tu número real
+      const msg = encodeURIComponent(`Hola! Quiero comprar: ${item.name} (${item.set}) por ${displayPrice(item)}. Â¿Coordinamos?`);
+      return `https://wa.me/54911XXXXYYYY?text=${msg}`; // ponÃ© tu nÃºmero real
     }
 
     function render() {
@@ -166,24 +166,24 @@
     load();
   </script>
 
-  <!-- Datos de ejemplo: editá o borrá -->
+  <!-- Datos de ejemplo: editÃ¡ o borrÃ¡ -->
   <script id="products-sample" type="application/json">
   {
     "ars_per_usd": 1100,
     "items": [
       {
         "name": "Pikachu (Neo Genesis) JP",
-        "set": "Neo 1 (japonés)",
+        "set": "Neo 1 (japonÃ©s)",
         "condition": "LP",
         "price_usd": 4,
-        "note": "Old back. Versión japonesa.",
+        "note": "Old back. VersiÃ³n japonesa.",
         "photo1": "images/pikachu-front.jpg",
         "photo2": "images/pikachu-back.jpg",
         "mp_link": "https://link.mercadopago.com.ar/TUALIASOURLINK"
       },
       {
         "name": "Dark Charmeleon (Rocket) JP",
-        "set": "Rocket (japonés)",
+        "set": "Rocket (japonÃ©s)",
         "condition": "LP",
         "price_usd": 4,
         "note": "No holo. Old back.",
@@ -196,3 +196,5 @@
   </script>
 </body>
 </html>
+
+
