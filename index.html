@@ -62,13 +62,18 @@
         <span class="text-2xl font-black tracking-tight text-slate-800">OldBackTCG</span>
         <span class="text-sm text-slate-500">· Cartas en venta</span>
       </div>
-      <div class="ml-auto flex items-center gap-2">
-        <input id="q" placeholder="Buscar Pokémon, set, condición…" class="pill w-64 max-w-[50vw] px-4 py-2 bg-white/80 border border-black/10 focus:bg-white outline-none" />
-        <select id="currency" class="pill px-3 py-2 bg-white/80 border border-black/10">
-          <option value="USD">USD</option><option value="ARS">ARS</option>
-        </select>
-      </div>
-    </div>
+    <div class="ml-auto flex items-center gap-2">
+  <input id="q" placeholder="Buscar Pokémon, set, condición…" class="pill w-64 max-w-[50vw] px-4 py-2 bg-white/80 border border-black/10 focus:bg-white outline-none" />
+  <select id="currency" class="pill px-3 py-2 bg-white/80 border border-black/10">
+    <option value="USD">USD</option><option value="ARS">ARS</option>
+  </select>
+  <!-- Entrada de tasa manual (USD venta – Banco Ciudad) -->
+  <div class="hidden sm:flex items-center gap-1 text-xs text-white/80">
+    <span class="px-2 py-1 pill bg-white/15 border border-white/20">USD→ARS</span>
+    <input id="rateInput" type="number" step="0.01" class="w-24 px-2 py-1 pill bg-white/80 border border-black/10 text-sm" placeholder="1460">
+    <button id="rateSet" class="btn-ghost text-sm">Actualizar</button>
+  </div>
+</div>
   </header>
 
   <!-- Hero / Aviso -->
@@ -114,6 +119,30 @@
     <div id="galInner" class="bg-white px-4 pb-6 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
   </dialog>
 
+  <dialog id="payDialog" class="modal w-[min(92vw,520px)]">
+  <div class="p-4 border-b bg-white flex justify-between items-center">
+    <strong class="text-slate-800">Pagar en ARS</strong>
+    <button id="payClose" class="btn-ghost">Cerrar</button>
+  </div>
+  <div class="bg-white p-5 space-y-4">
+    <div>
+      <div class="text-sm text-slate-600">Monto</div>
+      <div id="payAmount" class="text-2xl font-extrabold text-slate-900"></div>
+      <button id="copyAmount" class="btn-ghost mt-2">Copiar monto</button>
+    </div>
+    <div>
+      <div class="text-sm text-slate-600">Alias para transferir</div>
+      <div id="payAlias" class="text-lg font-semibold">ALIAS.MERCADOPAGO.TUYO</div>
+      <button id="copyAlias" class="btn-ghost mt-2">Copiar alias</button>
+    </div>
+    <div class="pt-2">
+      <a id="waPrefill" target="_blank" rel="noopener" class="btn-primary">Enviar mensaje por WhatsApp</a>
+      <p class="text-xs text-slate-500 mt-2">Transferí por tu app a ese alias. Luego coordinamos por PAQ.AR o Parque Rivadavia.</p>
+    </div>
+  </div>
+</dialog>
+
+
   <!-- Footer -->
   <footer class="mt-6">
     <div class="max-w-6xl mx-auto px-4 py-8 text-xs text-white/80">
@@ -124,6 +153,19 @@
 
   <script>
     const STATE = { items: [], currency: 'USD', rate: 1 };
+    const MP_ALIAS = "ALIAS.MERCADOPAGO.TUYO"; // <-- EDITAR con tu alias real
+const WHATSAPP_NUM = "54911XXXXYYYY";       // <-- EDITAR con tu número
+
+function setRate(r){
+  STATE.rate = Number(r)||STATE.rate;
+  localStorage.setItem("ob_rate", STATE.rate);
+  updateRateUI();
+}
+function updateRateUI(){
+  const inp = document.querySelector("#rateInput");
+  if (inp) inp.value = STATE.rate;
+}
+
 
     async function load() {
       try {
@@ -138,6 +180,11 @@
           const data = JSON.parse(embedded.textContent);
           STATE.items = data.items || [];
           STATE.rate = data.ars_per_usd || 1000;
+          // override con lo guardado (si ya configuraste una tasa previamente)
+const saved = localStorage.getItem("ob_rate");
+if (saved) STATE.rate = Number(saved) || STATE.rate;
+updateRateUI();
+
           render();
         } else {
           document.querySelector('#grid').innerHTML =
@@ -194,8 +241,42 @@
         node.querySelector('.name').textContent = item.name;
         node.querySelector('.note').textContent = item.note || '';
         node.querySelector('.price').textContent = displayPrice(item);
-        node.querySelector('.buy').href = buyLink(item);
-        node.querySelector('.more').addEventListener('click', () => openGallery(item));
+ const buyBtn = node.querySelector('.buy');
+buyBtn.addEventListener('click', (ev) => {
+  // USD: si hay mp_link, abrí directo el Link de Pago
+  if (STATE.currency === 'USD' && item.mp_link) {
+    buyBtn.href = item.mp_link;
+    return;
+  }
+
+  // ARS: calcular y mostrar modal con alias + monto
+  if (STATE.currency === 'ARS') {
+    ev.preventDefault();
+    const priceUSD = item.price_usd ?? null;
+    const priceARS = item.price_ars ?? null;
+    let monto = priceARS != null ? priceARS : (priceUSD != null ? Math.round(priceUSD * STATE.rate) : null);
+
+    if (!monto) { alert("No hay precio para este producto."); return; }
+
+    const payAmount = document.getElementById("payAmount");
+    payAmount.textContent = new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 }).format(monto);
+    payAmount.dataset.raw = String(monto);
+
+    document.getElementById("payAlias").textContent = MP_ALIAS;
+
+    const msg = encodeURIComponent(`Hola! Quiero comprar: ${item.name} (${item.set}). Total: ${payAmount.textContent}. Alias: ${MP_ALIAS}`);
+    document.getElementById("waPrefill").href = `https://wa.me/${WHATSAPP_NUM}?text=${msg}`;
+
+    payDlg.showModal();
+    return;
+  }
+
+  // Fallback
+  buyBtn.href = item.mp_link || '#';
+});
+
+node.querySelector('.more').addEventListener('click', () => openGallery(item));
+
         grid.appendChild(node);
       });
     }
@@ -218,6 +299,24 @@
     document.querySelector('#q').addEventListener('input', render);
     document.querySelector('#currency').addEventListener('change', render);
     document.querySelector('#year').textContent = new Date().getFullYear();
+    // Botón para guardar la tasa manual
+document.getElementById("rateSet")?.addEventListener("click", ()=>{
+  const v = document.getElementById("rateInput").value;
+  setRate(v);
+  render();
+});
+
+// Modal de pago (ARS)
+const payDlg = document.getElementById("payDialog");
+document.getElementById("payClose")?.addEventListener("click", ()=>payDlg.close());
+document.getElementById("copyAlias")?.addEventListener("click", ()=>{
+  navigator.clipboard.writeText(MP_ALIAS);
+});
+document.getElementById("copyAmount")?.addEventListener("click", ()=>{
+  const raw = document.getElementById("payAmount").dataset.raw || "";
+  navigator.clipboard.writeText(raw);
+});
+
     load();
   </script>
 
@@ -251,6 +350,7 @@
   </script>
 </body>
 </html>
+
 
 
 
