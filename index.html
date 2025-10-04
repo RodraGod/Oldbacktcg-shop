@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OldBackTCG · Cartas en venta</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="Catálogo de cartas japonesas old back de Pokémon. Pagá por Link de Pago de Mercado Pago. Envíos por PAQ.AR o retiro por Parque Rivadavia."/>
+  <style>
+    .img-wrap { aspect-ratio: 3/4; overflow: hidden; }
+    .img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  </style>
+</head>
+<body class="bg-neutral-100 text-neutral-900">
+  <header class="sticky top-0 z-10 bg-white/90 backdrop-blur border-b">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
+      <span class="text-2xl font-black tracking-tight">OldBackTCG</span>
+      <span class="text-sm text-neutral-500">· Cartas en venta</span>
+      <div class="ml-auto flex items-center gap-2">
+        <input id="q" placeholder="Buscar Pokémon, set, condición…" class="w-64 max-w-[50vw] px-3 py-2 rounded-xl bg-neutral-100 border focus:bg-white outline-none">
+        <select id="currency" class="px-3 py-2 rounded-xl bg-neutral-100 border">
+          <option value="USD">USD</option>
+          <option value="ARS">ARS</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto px-4 py-6">
+    <section class="mb-4 text-sm text-neutral-700">
+      <p class="leading-relaxed">
+        Envíos por <b>PAQ.AR</b> a cargo del comprador · Retiro en <b>Parque Rivadavia</b> (cercanías del local de Charly).
+      </p>
+    </section>
+
+    <section id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></section>
+
+    <template id="cardTpl">
+      <article class="bg-white border rounded-2xl shadow-sm hover:shadow-md transition p-3 flex flex-col">
+        <div class="img-wrap rounded-xl overflow-hidden bg-neutral-200">
+          <img alt="Carta" loading="lazy">
+        </div>
+        <div class="mt-3 text-xs uppercase tracking-wide text-neutral-500 flex items-center justify-between">
+          <span class="set"></span>
+          <span class="cond"></span>
+        </div>
+        <h3 class="mt-1 font-semibold text-lg name"></h3>
+        <p class="text-sm text-neutral-600 note"></p>
+        <div class="mt-3 flex items-center justify-between">
+          <div class="price text-xl font-bold"></div>
+          <div class="flex gap-2">
+            <a class="buy inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-black text-white text-sm font-semibold active:scale-[0.98]" target="_blank" rel="noopener">
+              Comprar
+            </a>
+            <button class="more inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm">Fotos</button>
+          </div>
+        </div>
+      </article>
+    </template>
+  </main>
+
+  <!-- Modal -->
+  <dialog id="gallery" class="backdrop:bg-black/50 rounded-2xl p-0 w-[min(96vw,900px)]">
+    <div class="p-2 flex justify-end"><button id="closeGal" class="px-3 py-1 text-sm border rounded-xl">Cerrar</button></div>
+    <div id="galInner" class="px-4 pb-6 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+  </dialog>
+
+  <footer class="max-w-6xl mx-auto px-4 py-8 text-xs text-neutral-500">
+    <p>
+      ¿Cómo funciona el pago? Cada producto tiene un <b>Link de Pago</b> de Mercado Pago: el comprador paga el monto y luego coordinan entrega (envío por PAQ.AR o retiro por Parque Rivadavia).
+    </p>
+    <p class="mt-2">© <span id="year"></span> OldBackTCG · Hecho con HTML+JS · Sin servidores, gratis en GitHub Pages.</p>
+  </footer>
+
+  <script>
+    const STATE = { items: [], currency: 'USD', rate: 1 };
+
+    async function load() {
+      try {
+        const res = await fetch('products.json?cache=' + Date.now());
+        const data = await res.json();
+        STATE.items = data.items || [];
+        STATE.rate = data.ars_per_usd || 1000;
+        render();
+      } catch (e) {
+        // fallback con los datos de ejemplo embebidos
+        const embedded = document.querySelector('#products-sample');
+        if (embedded) {
+          const data = JSON.parse(embedded.textContent);
+          STATE.items = data.items || [];
+          STATE.rate = data.ars_per_usd || 1000;
+          render();
+        }
+      }
+    }
+
+    function money(n, cur) {
+      if (cur === 'ARS') return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
+      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
+    }
+
+    function displayPrice(item) {
+      const cur = STATE.currency;
+      if (cur === 'USD' && item.price_usd != null) return money(item.price_usd, 'USD');
+      if (cur === 'ARS' && item.price_ars != null) return money(item.price_ars, 'ARS');
+      if (cur === 'ARS' && item.price_usd != null) return money(item.price_usd * STATE.rate, 'ARS');
+      if (cur === 'USD' && item.price_ars != null) return money(item.price_ars / STATE.rate, 'USD');
+      return 'Consultar';
+    }
+
+    function buyLink(item) {
+      if (item.mp_link) return item.mp_link;
+      const msg = encodeURIComponent(`Hola! Quiero comprar: ${item.name} (${item.set}) por ${displayPrice(item)}. ¿Coordinamos?`);
+      return `https://wa.me/54911XXXXYYYY?text=${msg}`; // poné tu número real
+    }
+
+    function render() {
+      const grid = document.querySelector('#grid');
+      const q = (document.querySelector('#q').value || '').trim().toLowerCase();
+      grid.innerHTML = '';
+      const tpl = document.querySelector('#cardTpl');
+      const cur = document.querySelector('#currency').value;
+      STATE.currency = cur;
+
+      const filtered = STATE.items.filter(it => {
+        const hay = `${it.name} ${it.set||''} ${it.condition||''} ${it.note||''}`.toLowerCase();
+        return !q || hay.includes(q);
+      });
+
+      filtered.forEach(item => {
+        const node = tpl.content.firstElementChild.cloneNode(true);
+        const imgEl = node.querySelector('img');
+        imgEl.src = item.photo1 || 'https://placehold.co/600x800?text=Foto';
+        imgEl.alt = item.name;
+        node.querySelector('.set').textContent = item.set || '';
+        node.querySelector('.cond').textContent = item.condition || '';
+        node.querySelector('.name').textContent = item.name;
+        node.querySelector('.note').textContent = item.note || '';
+        node.querySelector('.price').textContent = displayPrice(item);
+        const buyBtn = node.querySelector('.buy');
+        buyBtn.href = buyLink(item);
+        const moreBtn = node.querySelector('.more');
+        moreBtn.addEventListener('click', () => openGallery(item));
+        grid.appendChild(node);
+      });
+    }
+
+    function openGallery(item){
+      const dlg = document.querySelector('#gallery');
+      const inner = document.querySelector('#galInner');
+      inner.innerHTML = '';
+      [item.photo1, item.photo2, item.photo3].filter(Boolean).forEach(src => {
+        const wrap = document.createElement('div');
+        wrap.className = 'rounded-xl overflow-hidden bg-neutral-200';
+        const img = document.createElement('img');
+        img.src = src; img.loading = 'lazy'; img.className = 'w-full h-full object-contain';
+        wrap.appendChild(img); inner.appendChild(wrap);
+      });
+      dlg.showModal();
+    }
+
+    document.querySelector('#closeGal').addEventListener('click', ()=>document.querySelector('#gallery').close());
+    document.querySelector('#q').addEventListener('input', render);
+    document.querySelector('#currency').addEventListener('change', render);
+    document.querySelector('#year').textContent = new Date().getFullYear();
+    load();
+  </script>
+
+  <!-- Datos de ejemplo: editá o borrá -->
+  <script id="products-sample" type="application/json">
+  {
+    "ars_per_usd": 1100,
+    "items": [
+      {
+        "name": "Pikachu (Neo Genesis) JP",
+        "set": "Neo 1 (japonés)",
+        "condition": "LP",
+        "price_usd": 4,
+        "note": "Old back. Versión japonesa.",
+        "photo1": "images/pikachu-front.jpg",
+        "photo2": "images/pikachu-back.jpg",
+        "mp_link": "https://link.mercadopago.com.ar/TUALIASOURLINK"
+      },
+      {
+        "name": "Dark Charmeleon (Rocket) JP",
+        "set": "Rocket (japonés)",
+        "condition": "LP",
+        "price_usd": 4,
+        "note": "No holo. Old back.",
+        "photo1": "images/dark-charmeleon-front.jpg",
+        "photo2": "images/dark-charmeleon-back.jpg",
+        "mp_link": "https://link.mercadopago.com.ar/TUOTROLINK"
+      }
+    ]
+  }
+  </script>
+</body>
+</html>
