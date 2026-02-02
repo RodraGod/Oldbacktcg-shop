@@ -1,361 +1,105 @@
-<!doctype html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OldBackTCG · Cartas en venta</title>
-  <meta name="description" content="Catálogo de cartas japonesas old back de Pokémon. Pagá por Link de Pago de Mercado Pago. Envíos por PAQ.AR o retiro por Parque Rivadavia."/>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Old Back TCG — JP Cards For Sale</title>
   <style>
-    :root{
-      --bg-grad-1:#0b0f14; --bg-grad-2:#121a24; --bg-grad-3:#1a2430;
-      --accent:#00e0b8;   --accent-2:#ffd166;  --ink:#0f172a;
-      --ring:#1ee3c6;
-    }
-    /* Fondo con degradé + textura */
-    body{
-      background: radial-gradient(1200px 600px at 10% -10%, rgba(0,224,184,.20), transparent 60%),
-                  radial-gradient(1200px 600px at 110% -20%, rgba(255,209,102,.18), transparent 60%),
-                  linear-gradient(180deg, var(--bg-grad-1), var(--bg-grad-2) 40%, var(--bg-grad-3));
-      color: #0a0a0a;
-    }
-    .glass{ backdrop-filter: blur(8px); background: rgba(255,255,255,.7); }
-    .pill { border-radius: 999px; }
-    .img-wrap{ aspect-ratio: 3/4; overflow: hidden; }
-    .img-wrap img{ width:100%; height:100%; object-fit:cover; }
-    /* Tarjetas */
-    .card{
-      border-radius: 18px; border:1px solid rgba(0,0,0,.06);
-      box-shadow: 0 6px 25px rgba(0,0,0,.08);
-      transform: translateZ(0); transition: box-shadow .25s, transform .25s, border-color .25s;
-      background: linear-gradient(180deg, #ffffff, #fafafa);
-    }
-    .card:hover{ transform: translateY(-4px);
-      box-shadow: 0 14px 40px rgba(0,0,0,.12);
-      border-color: rgba(0,224,184,.35);
-    }
-    .ribbon{
-      height: 6px; width: 100%;
-      background: linear-gradient(90deg, var(--accent), #66ffd8 35%, var(--accent-2) 65%, #ffe28f);
-    }
-    .logo{ height: 56px; width:auto; border-radius:10px; }
-    .btn-primary{
-      background: #111827; color:#fff; font-weight:700;
-      padding:.55rem 1rem; border-radius:14px; transition: transform .08s;
-    }
-    .btn-primary:active{ transform: scale(.98); }
-    .btn-ghost{ border:1px solid rgba(0,0,0,.12); border-radius:14px; padding:.5rem .9rem; }
-    /* Modal */
-    dialog::backdrop{ background: rgba(0,0,0,.55); }
-    .modal{ border:0; border-radius:18px; overflow:hidden; }
+    body{margin:0;font-family:Arial;background:#0b0b0b;color:#fff}
+    header{padding:18px 16px;border-bottom:1px solid #222;position:sticky;top:0;background:#0b0b0b}
+    h1{margin:0;font-size:18px}
+    .sub{opacity:.8;font-size:13px;margin-top:6px}
+    .wrap{padding:16px;max-width:1100px;margin:0 auto}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+    .card{background:#141414;border:1px solid #222;border-radius:12px;overflow:hidden;cursor:pointer}
+    .card img{width:100%;height:240px;object-fit:cover;display:block;transition:transform .15s ease}
+    .card:hover img{transform:scale(1.03)}
+    .info{padding:10px}
+    .name{font-size:13px;line-height:1.2;margin-bottom:6px}
+    .price{color:#00ff9c;font-weight:700}
+    .tag{opacity:.7;font-size:12px;margin-top:6px}
+
+    /* modal */
+    .modal{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;padding:18px}
+    .modal.open{display:flex}
+    .modalBox{max-width:900px;width:100%;background:#0f0f0f;border:1px solid #222;border-radius:14px;overflow:hidden}
+    .modalImg{width:100%;max-height:78vh;object-fit:contain;background:#000}
+    .modalBar{display:flex;gap:12px;justify-content:space-between;align-items:center;padding:12px 14px;border-top:1px solid #222}
+    .btn{background:#1b1b1b;border:1px solid #2a2a2a;color:#fff;padding:8px 10px;border-radius:10px;text-decoration:none;font-size:13px}
+    .btn:hover{border-color:#3a3a3a}
   </style>
 </head>
-<body class="text-neutral-900">
-  <!-- Franja superior -->
-  <div class="ribbon"></div>
+<body>
 
-  <!-- Header -->
-  <header class="sticky top-0 z-20 border-b border-white/30 glass">
-    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center gap-3">
-      <img src="images/logo.png" alt="OldBackTCG" class="logo">
-      <div class="flex items-baseline gap-2">
-        <span class="text-2xl font-black tracking-tight text-slate-800">OldBackTCG</span>
-        <span class="text-sm text-slate-500">· Cartas en venta</span>
+<header>
+  <h1>Old Back TCG — Japanese Cards For Sale</h1>
+  <div class="sub">Contacto: WhatsApp +54… · IG: @OldBackTCG · Precios en USD · Envío a cargo del comprador</div>
+</header>
+
+<div class="wrap">
+  <div class="grid" id="grid">
+
+    <!-- DUPLICÁ ESTE BLOQUE POR CARTA -->
+    <div class="card" data-name="Dark Charizard (JP) — Rocket Gang" data-price="$350"
+      data-img="https://i.imgur.com/ABC123.webp">
+      <img src="https://i.imgur.com/ABC123.webp" loading="lazy" alt="Dark Charizard JP">
+      <div class="info">
+        <div class="name">Dark Charizard (JP) — Rocket Gang</div>
+        <div class="price">$350</div>
+        <div class="tag">Estado: LP · Holo</div>
       </div>
-    <div class="ml-auto flex items-center gap-2">
-  <input id="q" placeholder="Buscar Pokémon, set, condición…" class="pill w-64 max-w-[50vw] px-4 py-2 bg-white/80 border border-black/10 focus:bg-white outline-none" />
-  <select id="currency" class="pill px-3 py-2 bg-white/80 border border-black/10">
-    <option value="USD">USD</option><option value="ARS">ARS</option>
-  </select>
-  <!-- Entrada de tasa manual (USD venta – Banco Ciudad) -->
-  <div class="hidden sm:flex items-center gap-1 text-xs text-white/80">
-    <span class="px-2 py-1 pill bg-white/15 border border-white/20">USD→ARS</span>
-    <input id="rateInput" type="number" step="0.01" class="w-24 px-2 py-1 pill bg-white/80 border border-black/10 text-sm" placeholder="1460">
-    <button id="rateSet" class="btn-ghost text-sm">Actualizar</button>
+    </div>
+    <!-- FIN BLOQUE -->
+
   </div>
 </div>
-  </header>
 
-  <!-- Hero / Aviso -->
-  <section class="max-w-6xl mx-auto px-4">
-    <div class="mt-5 mb-3 rounded-2xl border border-white/20 glass p-4">
-      <p class="text-sm text-slate-700">
-        Envíos por <b class="text-emerald-700">PAQ.AR</b> a cargo del comprador · Retiro en <b class="text-slate-800">Parque Rivadavia</b> (cercanías del local de Charly).
-      </p>
-    </div>
-  </section>
-
-  <!-- Grid -->
-  <main class="max-w-6xl mx-auto px-4 pb-10">
-    <section id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"></section>
-
-    <template id="cardTpl">
-      <article class="card p-3 flex flex-col">
-        <div class="img-wrap rounded-xl overflow-hidden bg-neutral-200">
-          <img alt="Carta" loading="lazy">
-        </div>
-        <div class="mt-3 text-[11px] uppercase tracking-wide text-neutral-500 flex items-center justify-between">
-          <span class="set"></span><span class="cond px-2 py-0.5 pill bg-emerald-50 text-emerald-700 border border-emerald-200"></span>
-        </div>
-        <h3 class="mt-1 font-semibold text-lg name text-slate-900"></h3>
-        <p class="text-sm text-neutral-600 note"></p>
-        <div class="mt-3 flex items-center justify-between">
-          <div class="price text-xl font-extrabold text-slate-900"></div>
-          <div class="flex gap-2">
-            <a class="buy btn-primary" target="_blank" rel="noopener">Comprar</a>
-            <button class="more btn-ghost text-sm">Fotos</button>
-          </div>
-        </div>
-      </article>
-    </template>
-  </main>
-
-  <!-- Modal -->
-  <dialog id="gallery" class="modal w-[min(96vw,980px)]">
-    <div class="p-3 border-b flex justify-between items-center bg-white">
-      <strong class="text-slate-800">Fotos del producto</strong>
-      <button id="closeGal" class="btn-ghost">Cerrar</button>
-    </div>
-    <div id="galInner" class="bg-white px-4 pb-6 grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-  </dialog>
-
-  <dialog id="payDialog" class="modal w-[min(92vw,520px)]">
-  <div class="p-4 border-b bg-white flex justify-between items-center">
-    <strong class="text-slate-800">Pagar en ARS</strong>
-    <button id="payClose" class="btn-ghost">Cerrar</button>
-  </div>
-  <div class="bg-white p-5 space-y-4">
-    <div>
-      <div class="text-sm text-slate-600">Monto</div>
-      <div id="payAmount" class="text-2xl font-extrabold text-slate-900"></div>
-      <button id="copyAmount" class="btn-ghost mt-2">Copiar monto</button>
-    </div>
-    <div>
-      <div class="text-sm text-slate-600">Alias para transferir</div>
-      <div id="payAlias" class="text-lg font-semibold">rodrigo.tavera.mp</div>
-      <button id="copyAlias" class="btn-ghost mt-2">Copiar alias</button>
-    </div>
-    <div class="pt-2">
-      <a id="waPrefill" target="_blank" rel="noopener" class="btn-primary">Enviar mensaje por WhatsApp</a>
-      <p class="text-xs text-slate-500 mt-2">Transferí por tu app a ese alias. Luego coordinamos por PAQ.AR o Parque Rivadavia.</p>
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modalBox">
+    <img class="modalImg" id="modalImg" src="" alt="">
+    <div class="modalBar">
+      <div>
+        <div id="modalName" style="font-weight:700"></div>
+        <div id="modalPrice" style="opacity:.85"></div>
+      </div>
+      <div style="display:flex;gap:10px">
+        <a class="btn" id="openImg" target="_blank" rel="noreferrer">Abrir imagen</a>
+        <button class="btn" id="closeBtn">Cerrar</button>
+      </div>
     </div>
   </div>
-</dialog>
+</div>
 
+<script>
+  const modal = document.getElementById("modal");
+  const modalImg = document.getElementById("modalImg");
+  const modalName = document.getElementById("modalName");
+  const modalPrice = document.getElementById("modalPrice");
+  const openImg = document.getElementById("openImg");
+  const closeBtn = document.getElementById("closeBtn");
 
-  <!-- Footer -->
-  <footer class="mt-6">
-    <div class="max-w-6xl mx-auto px-4 py-8 text-xs text-white/80">
-      <p>¿Cómo funciona el pago? Cada producto tiene un <b class="text-white">Link de Pago</b> de Mercado Pago: el comprador paga el monto y luego coordinan entrega (envío por PAQ.AR o retiro por Parque Rivadavia).</p>
-      <p class="mt-2">© <span id="year"></span> OldBackTCG · Hecho con HTML+JS · Sin servidores, gratis en GitHub Pages.</p>
-    </div>
-  </footer>
+  document.getElementById("grid").addEventListener("click", (e) => {
+    const card = e.target.closest(".card");
+    if(!card) return;
+    const name = card.dataset.name || "";
+    const price = card.dataset.price || "";
+    const img = card.dataset.img || "";
+    modalName.textContent = name;
+    modalPrice.textContent = price;
+    modalImg.src = img;
+    openImg.href = img;
+    modal.classList.add("open");
+  });
 
-  <script>
-    const STATE = { items: [], currency: 'USD', rate: 1 };
-    const MP_ALIAS = "rodrigo.tavera.mp"; // <-- EDITAR con tu alias real
-const WHATSAPP_NUM = "1133956408";       // <-- EDITAR con tu número
+  closeBtn.addEventListener("click", () => modal.classList.remove("open"));
+  modal.addEventListener("click", (e) => {
+    if(e.target === modal) modal.classList.remove("open");
+  });
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape") modal.classList.remove("open");
+  });
+</script>
 
-function setRate(r){
-  STATE.rate = Number(r)||STATE.rate;
-  localStorage.setItem("ob_rate", STATE.rate);
-  updateRateUI();
-}
-function updateRateUI(){
-  const inp = document.querySelector("#rateInput");
-  if (inp) inp.value = STATE.rate;
-}
-
-
-    async function load() {
-      try {
-        const res = await fetch('products.json?cache=' + Date.now());
-        const data = await res.json();
-        STATE.items = data.items || [];
-        STATE.rate = data.ars_per_usd || 1000;
-        render();
-      } catch (e) {
-        const embedded = document.querySelector('#products-sample');
-        if (embedded) {
-          const data = JSON.parse(embedded.textContent);
-          STATE.items = data.items || [];
-          STATE.rate = data.ars_per_usd || 1000;
-          // override con lo guardado (si ya configuraste una tasa previamente)
-const saved = localStorage.getItem("ob_rate");
-if (saved) STATE.rate = Number(saved) || STATE.rate;
-updateRateUI();
-
-          render();
-        } else {
-          document.querySelector('#grid').innerHTML =
-            "<div class='col-span-full text-center text-white/80'>No se pudo cargar products.json.</div>";
-        }
-      }
-    }
-
-    function money(n, cur) {
-      if (cur === 'ARS')
-        return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(n);
-      return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
-    }
-
-    function displayPrice(item) {
-      const cur = STATE.currency;
-      const usd = item.price_usd ?? null, ars = item.price_ars ?? null;
-      if (cur === 'USD') {
-        if (usd != null) return money(usd, 'USD');
-        if (ars != null) return `~ ${money((ars/STATE.rate).toFixed(2), 'USD')}`;
-      } else {
-        if (ars != null) return money(ars, 'ARS');
-        if (usd != null) return `~ ${money(Math.round(usd*STATE.rate), 'ARS')}`;
-      }
-      return 'Consultar';
-    }
-
-    function buyLink(item) {
-      if (item.mp_link) return item.mp_link;
-      const msg = encodeURIComponent(`Hola! Quiero comprar: ${item.name} (${item.set}) por ${displayPrice(item)}. ¿Coordinamos?`);
-      return `https://wa.me/54911XXXXYYYY?text=${msg}`; // EDITÁ con tu número real
-    }
-
-    function render() {
-      const grid = document.querySelector('#grid');
-      const q = (document.querySelector('#q').value || '').trim().toLowerCase();
-      grid.innerHTML = '';
-      const tpl = document.querySelector('#cardTpl');
-      const cur = document.querySelector('#currency').value;
-      STATE.currency = cur;
-
-      const filtered = STATE.items.filter(it => {
-        const hay = `${it.name} ${it.set||''} ${it.condition||''} ${it.note||''}`.toLowerCase();
-        return !q || hay.includes(q);
-      });
-
-      filtered.forEach(item => {
-        const node = tpl.content.firstElementChild.cloneNode(true);
-        const imgEl = node.querySelector('img');
-        imgEl.src = (item.photo1 || 'https://placehold.co/700x950?text=Foto');
-        imgEl.alt = item.name;
-        node.querySelector('.set').textContent = item.set || '';
-        node.querySelector('.cond').textContent = item.condition || '';
-        node.querySelector('.name').textContent = item.name;
-        node.querySelector('.note').textContent = item.note || '';
-        node.querySelector('.price').textContent = displayPrice(item);
- const buyBtn = node.querySelector('.buy');
-buyBtn.addEventListener('click', (ev) => {
-  // USD: si hay mp_link, abrí directo el Link de Pago
-  if (STATE.currency === 'USD' && item.mp_link) {
-    buyBtn.href = item.mp_link;
-    return;
-  }
-
-  // ARS: calcular y mostrar modal con alias + monto
-  if (STATE.currency === 'ARS') {
-    ev.preventDefault();
-    const priceUSD = item.price_usd ?? null;
-    const priceARS = item.price_ars ?? null;
-    let monto = priceARS != null ? priceARS : (priceUSD != null ? Math.round(priceUSD * STATE.rate) : null);
-
-    if (!monto) { alert("No hay precio para este producto."); return; }
-
-    const payAmount = document.getElementById("payAmount");
-    payAmount.textContent = new Intl.NumberFormat('es-AR', { style:'currency', currency:'ARS', maximumFractionDigits:0 }).format(monto);
-    payAmount.dataset.raw = String(monto);
-
-    document.getElementById("payAlias").textContent = MP_ALIAS;
-
-    const msg = encodeURIComponent(`Hola! Quiero comprar: ${item.name} (${item.set}). Total: ${payAmount.textContent}. Alias: ${MP_ALIAS}`);
-    document.getElementById("waPrefill").href = `https://wa.me/${WHATSAPP_NUM}?text=${msg}`;
-
-    payDlg.showModal();
-    return;
-  }
-
-  // Fallback
-  buyBtn.href = item.mp_link || '#';
-});
-
-node.querySelector('.more').addEventListener('click', () => openGallery(item));
-
-        grid.appendChild(node);
-      });
-    }
-
-    function openGallery(item){
-      const dlg = document.querySelector('#gallery');
-      const inner = document.querySelector('#galInner');
-      inner.innerHTML = '';
-      [item.photo1, item.photo2, item.photo3].filter(Boolean).forEach(src => {
-        const wrap = document.createElement('div');
-        wrap.className = 'rounded-xl overflow-hidden bg-neutral-200';
-        const img = document.createElement('img');
-        img.src = src; img.loading = 'lazy'; img.className = 'w-full h-full object-contain';
-        wrap.appendChild(img); inner.appendChild(wrap);
-      });
-      dlg.showModal();
-    }
-
-    document.querySelector('#closeGal').addEventListener('click', ()=>document.querySelector('#gallery').close());
-    document.querySelector('#q').addEventListener('input', render);
-    document.querySelector('#currency').addEventListener('change', render);
-    document.querySelector('#year').textContent = new Date().getFullYear();
-    // Botón para guardar la tasa manual
-document.getElementById("rateSet")?.addEventListener("click", ()=>{
-  const v = document.getElementById("rateInput").value;
-  setRate(v);
-  render();
-});
-
-// Modal de pago (ARS)
-const payDlg = document.getElementById("payDialog");
-document.getElementById("payClose")?.addEventListener("click", ()=>payDlg.close());
-document.getElementById("copyAlias")?.addEventListener("click", ()=>{
-  navigator.clipboard.writeText(MP_ALIAS);
-});
-document.getElementById("copyAmount")?.addEventListener("click", ()=>{
-  const raw = document.getElementById("payAmount").dataset.raw || "";
-  navigator.clipboard.writeText(raw);
-});
-
-    load();
-  </script>
-
-  <!-- Datos de ejemplo: editá o borrá -->
-  <script id="products-sample" type="application/json">
-  {
-    "ars_per_usd": 1100,
-    "items": [
-      {
-        "name": "Celebi - Awakening Legends",
-        "set": "Neo 3 (japonés)",
-        "condition": "NM",
-        "price_usd": 60,
-        "note": "Old back. Versión japonesa.",
-        "photo1": "images/celebi1.jpg",
-        "photo2": "images/celebi2.jpg",
-        "mp_link": "https://link.mercadopago.com.ar/oldbacktcg"
-      },
-      {
-        "name": "Umbreon - Premium File",
-        "set": "Neo (japonés)",
-        "condition": "NM",
-        "price_usd": 35,
-        "note": "No holo. Old back.",
-        "photo1": "images/umbreon1.jpg",
-        "photo2": "images/umbreon2.jpg",
-        "mp_link": "https://link.mercadopago.com.ar/oldbacktcg"
-      }
-    ]
-  }
-  </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
